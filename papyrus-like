@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ancient Civilizations Timeline</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&amp;family=Crimson+Text:ital,wght@0,400;0,600;1,400&amp;display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    
+    .font-display { font-family: 'Cinzel', serif; }
+    .font-body { font-family: 'Crimson Text', Georgia, serif; }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
+      50% { box-shadow: 0 0 20px 5px rgba(212, 175, 55, 0.2); }
+    }
+    
+    .timeline-container {
+      animation: fadeInUp 0.8s ease-out;
+    }
+    
+    .event-card {
+      animation: fadeInUp 0.6s ease-out backwards;
+    }
+    
+    .event-card:nth-child(1) { animation-delay: 0.1s; }
+    .event-card:nth-child(2) { animation-delay: 0.2s; }
+    .event-card:nth-child(3) { animation-delay: 0.3s; }
+    .event-card:nth-child(4) { animation-delay: 0.4s; }
+    .event-card:nth-child(5) { animation-delay: 0.5s; }
+    .event-card:nth-child(6) { animation-delay: 0.6s; }
+    .event-card:nth-child(7) { animation-delay: 0.7s; }
+    .event-card:nth-child(8) { animation-delay: 0.8s; }
+    .event-card:nth-child(9) { animation-delay: 0.9s; }
+    
+    .timeline-line {
+      background: linear-gradient(180deg, 
+        transparent 0%, 
+        #d4af37 5%, 
+        #d4af37 95%, 
+        transparent 100%
+      );
+    }
+    
+    .era-marker {
+      background: linear-gradient(135deg, #d4af37 0%, #b8962e 100%);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    
+    .card-expanded {
+      background: linear-gradient(135deg, 
+        rgba(30, 27, 24, 0.98) 0%, 
+        rgba(45, 40, 35, 0.98) 100%
+      );
+    }
+    
+    .decorative-border {
+      background: linear-gradient(90deg, 
+        transparent, 
+        #d4af37, 
+        transparent
+      );
+      background-size: 200% 100%;
+      animation: shimmer 3s linear infinite;
+    }
+    
+    .civilization-badge {
+      backdrop-filter: blur(4px);
+    }
+    
+    .expand-icon {
+      transition: transform 0.3s ease;
+    }
+    
+    .expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+    
+    .card-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.4s ease;
+    }
+    
+    .expanded .card-content {
+      max-height: 500px;
+    }
+
+    .filter-btn {
+      transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active {
+      transform: scale(1.05);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body">
+  <div id="app-wrapper" class="h-full w-full overflow-auto" style="background: linear-gradient(135deg, #1a1814 0%, #2d2820 50%, #1a1814 100%);"><!-- Header Section -->
+   <header class="text-center py-8 px-4 relative">
+    <div class="decorative-border h-0.5 w-48 mx-auto mb-6"></div>
+    <h1 id="main-title" class="font-display text-4xl md:text-5xl font-bold mb-3" style="color: #d4af37;">Ancient Civilizations</h1>
+    <p id="subtitle" class="font-display text-lg md:text-xl tracking-widest mb-4" style="color: #c9b896;">3000 BCE — 500 CE</p>
+    <p id="intro-text" class="max-w-2xl mx-auto text-base md:text-lg leading-relaxed" style="color: #a89f8a;">Explore the rise and legacy of humanity's greatest ancient empires through key moments that shaped our world.</p>
+    <div class="decorative-border h-0.5 w-48 mx-auto mt-6"></div>
+   </header><!-- Filter Controls -->
+   <nav class="flex flex-wrap justify-center gap-3 px-4 mb-8" aria-label="Filter by civilization"><button class="filter-btn active px-5 py-2 rounded-full font-display text-sm tracking-wide transition-all" style="background: #d4af37; color: #1a1814;" data-filter="all" onclick="filterEvents('all')"> All Civilizations </button> <button class="filter-btn px-5 py-2 rounded-full font-display text-sm tracking-wide border transition-all" style="border-color: #c9a227; color: #c9a227; background: transparent;" data-filter="egyptian" onclick="filterEvents('egyptian')"> 🏺 Egyptian </button> <button class="filter-btn px-5 py-2 rounded-full font-display text-sm tracking-wide border transition-all" style="border-color: #6b9bd1; color: #6b9bd1; background: transparent;" data-filter="greek" onclick="filterEvents('greek')"> 🏛️ Greek </button> <button class="filter-btn px-5 py-2 rounded-full font-display text-sm tracking-wide border transition-all" style="border-color: #c45c4a; color: #c45c4a; background: transparent;" data-filter="roman" onclick="filterEvents('roman')"> ⚔️ Roman </button>
+   </nav><!-- Timeline Container -->
+   <main class="timeline-container relative max-w-4xl mx-auto px-4 pb-16"><!-- Timeline Line -->
+    <div class="timeline-line absolute left-8 md:left-1/2 top-0 bottom-0 w-1 md:-ml-0.5" aria-hidden="true"></div><!-- Events Container -->
+    <div id="events-container" class="relative"><!-- Events will be rendered here -->
+    </div>
+   </main><!-- Fun Fact Footer -->
+   <footer class="text-center py-8 px-4" style="background: rgba(0,0,0,0.3);">
+    <p class="font-display text-sm tracking-wider mb-2" style="color: #d4af37;">💡 Did You Know?</p>
+    <p id="fun-fact" class="max-w-xl mx-auto text-base italic" style="color: #a89f8a;">Click on any event card to discover more fascinating details about ancient history!</p>
+   </footer>
+  </div>
+  <script>
+    // Historical events data
+    const events = [
+      {
+        id: 1,
+        year: "3000 BCE",
+        title: "Unification of Egypt",
+        civilization: "egyptian",
+        emoji: "👑",
+        summary: "King Narmer unites Upper and Lower Egypt, beginning the dynastic period.",
+        details: "The legendary King Narmer (also called Menes) conquered the Nile Delta region and unified the 'Two Lands' of Egypt. This momentous event established the world's first nation-state and began over 3,000 years of pharaonic rule. The Narmer Palette, discovered in 1898, depicts this conquest and is one of the earliest historical documents.",
+        funFact: "Ancient Egyptians invented one of the first writing systems—hieroglyphics—with over 700 unique symbols!",
+        color: "#c9a227"
+      },
+      {
+        id: 2,
+        year: "2560 BCE",
+        title: "Great Pyramid Built",
+        civilization: "egyptian",
+        emoji: "🔺",
+        summary: "The Great Pyramid of Giza is constructed for Pharaoh Khufu.",
+        details: "Standing 481 feet tall, the Great Pyramid was the tallest man-made structure for over 3,800 years. Built with approximately 2.3 million stone blocks, each weighing 2.5 tons on average, it required an estimated workforce of 20,000-30,000 skilled laborers working for about 20 years.",
+        funFact: "The pyramid is so precisely built that its base is level to within just 2.1 centimeters across its entire 230-meter length!",
+        color: "#c9a227"
+      },
+      {
+        id: 3,
+        year: "776 BCE",
+        title: "First Olympic Games",
+        civilization: "greek",
+        emoji: "🏆",
+        summary: "The ancient Olympic Games begin at Olympia, Greece.",
+        details: "Held in honor of Zeus, the first Olympics featured only one event—the stadion foot race of about 192 meters. The games were held every four years and created a sacred truce called 'ekecheiria' that halted all Greek conflicts during the competition. Winners received olive wreaths and became heroes in their city-states.",
+        funFact: "Ancient Olympic athletes competed completely naked! The word 'gymnasium' comes from the Greek word 'gymnos' meaning 'naked'.",
+        color: "#6b9bd1"
+      },
+      {
+        id: 4,
+        year: "508 BCE",
+        title: "Birth of Democracy",
+        civilization: "greek",
+        emoji: "🗳️",
+        summary: "Cleisthenes establishes democratic reforms in Athens.",
+        details: "Known as the 'Father of Athenian Democracy,' Cleisthenes reorganized the political structure of Athens to give ordinary citizens unprecedented power. His reforms created the 'ecclesia' (citizen assembly), where every male citizen could speak and vote on laws. This revolutionary system directly influenced modern democratic governments worldwide.",
+        funFact: "The word 'idiot' comes from the Greek 'idiotes'—meaning a person who didn't participate in politics!",
+        color: "#6b9bd1"
+      },
+      {
+        id: 5,
+        year: "336 BCE",
+        title: "Alexander Becomes King",
+        civilization: "greek",
+        emoji: "⚡",
+        summary: "Alexander the Great ascends to the Macedonian throne at age 20.",
+        details: "Following his father Philip II's assassination, young Alexander inherited a powerful army and ambitious dreams. Over the next 13 years, he would conquer the Persian Empire, Egypt, and parts of India, creating one of history's largest empires. His conquests spread Greek culture across three continents in a period called the Hellenistic Age.",
+        funFact: "Alexander named over 70 cities after himself and one after his horse, Bucephalus!",
+        color: "#6b9bd1"
+      },
+      {
+        id: 6,
+        year: "264 BCE",
+        title: "First Punic War Begins",
+        civilization: "roman",
+        emoji: "⚓",
+        summary: "Rome and Carthage clash for control of the Mediterranean.",
+        details: "This 23-year war began Rome's transformation from an Italian power to a Mediterranean superpower. Despite having no naval tradition, Rome built its first large fleet and learned sea warfare. The conflict ended with Rome gaining Sicily, its first overseas province, and establishing dominance over the western Mediterranean.",
+        funFact: "The Romans learned to build ships by copying a captured Carthaginian vessel—they made 100 copies in just 60 days!",
+        color: "#c45c4a"
+      },
+      {
+        id: 7,
+        year: "44 BCE",
+        title: "Assassination of Caesar",
+        civilization: "roman",
+        emoji: "🗡️",
+        summary: "Julius Caesar is assassinated by senators on the Ides of March.",
+        details: "On March 15, 44 BCE, a group of senators led by Brutus and Cassius stabbed Julius Caesar 23 times in the Theatre of Pompey. They feared Caesar's growing power would end the Roman Republic. Ironically, his death triggered civil wars that ultimately led to the end of the Republic and the rise of the Roman Empire under his adopted heir, Octavian.",
+        funFact: "Caesar's last words weren't 'Et tu, Brute?' — that was Shakespeare's invention. He likely said nothing, or possibly 'You too, child?' in Greek.",
+        color: "#c45c4a"
+      },
+      {
+        id: 8,
+        year: "27 BCE",
+        title: "Roman Empire Begins",
+        civilization: "roman",
+        emoji: "🦅",
+        summary: "Octavian becomes Augustus, the first Roman Emperor.",
+        details: "After defeating Mark Antony and Cleopatra, Octavian became the unchallenged ruler of Rome. The Senate granted him the title 'Augustus' (revered one), marking the official start of the Roman Empire. His reign of 41 years, known as the 'Pax Romana,' brought unprecedented peace and prosperity to the Mediterranean world.",
+        funFact: "August is named after Augustus Caesar, just as July is named after Julius Caesar. Augustus added a day to 'his' month so it wouldn't be shorter than July!",
+        color: "#c45c4a"
+      },
+      {
+        id: 9,
+        year: "476 CE",
+        title: "Fall of Western Rome",
+        civilization: "roman",
+        emoji: "🌅",
+        summary: "The last Western Roman Emperor is deposed, ending an era.",
+        details: "The Germanic chieftain Odoacer deposed the young Emperor Romulus Augustulus, traditionally marking the end of the Western Roman Empire and the ancient world. However, Roman culture, law, and the Latin language continued to influence European civilization for centuries. The Eastern Roman (Byzantine) Empire would continue for another thousand years.",
+        funFact: "The last emperor's name was ironically a combination of Rome's legendary founder (Romulus) and its first emperor (Augustus)!",
+        color: "#c45c4a"
+      }
+    ];
+
+    // Default configuration
+    const defaultConfig = {
+      timeline_title: "Ancient Civilizations",
+      timeline_subtitle: "3000 BCE — 500 CE",
+      intro_text: "Explore the rise and legacy of humanity's greatest ancient empires through key moments that shaped our world.",
+      background_color: "#1a1814",
+      accent_color: "#d4af37",
+      text_color: "#c9b896",
+      card_color: "#2d2820",
+      secondary_color: "#a89f8a",
+      font_family: "Cinzel",
+      font_size: 16
+    };
+
+    let currentFilter = 'all';
+    let expandedCards = new Set();
+
+    // Render a single event card
+    function renderEventCard(event, index) {
+      const isExpanded = expandedCards.has(event.id);
+      const isEven = index % 2 === 0;
+      
+      return `
+        <article class="event-card relative mb-8 ${isEven ? 'md:pr-1/2 md:text-right' : 'md:pl-1/2 md:ml-auto'} pl-16 md:pl-0 md:w-1/2 ${isExpanded ? 'expanded' : ''}"
+                 data-civilization="${event.civilization}"
+                 data-event-id="${event.id}">
+          
+          <!-- Era Marker -->
+          <div class="era-marker absolute left-6 md:left-1/2 w-4 h-4 rounded-full border-2 ${isEven ? 'md:-ml-2' : 'md:-ml-2'} top-6 z-10"
+               style="border-color: ${event.color}; background: ${event.color};">
+          </div>
+          
+          <!-- Card -->
+          <div class="relative rounded-xl p-5 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${isExpanded ? 'card-expanded' : ''}"
+               style="background: linear-gradient(135deg, rgba(45, 40, 35, 0.95) 0%, rgba(35, 30, 25, 0.95) 100%); border: 1px solid ${event.color}40;"
+               onclick="toggleCard(${event.id})">
+            
+            <!-- Civilization Badge -->
+            <div class="civilization-badge inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-display tracking-wider mb-3"
+                 style="background: ${event.color}20; color: ${event.color};">
+              <span>${event.emoji}</span>
+              <span class="capitalize">${event.civilization}</span>
+            </div>
+            
+            <!-- Year -->
+            <div class="font-display text-2xl font-bold mb-2" style="color: ${event.color};">
+              ${event.year}
+            </div>
+            
+            <!-- Title -->
+            <h3 class="font-display text-xl font-semibold mb-2" style="color: #f5f0e6;">
+              ${event.title}
+            </h3>
+            
+            <!-- Summary -->
+            <p class="text-base leading-relaxed mb-3" style="color: #c9b896;">
+              ${event.summary}
+            </p>
+            
+            <!-- Expand Indicator -->
+            <div class="flex items-center gap-2 text-sm" style="color: ${event.color};">
+              <span class="expand-icon">▼</span>
+              <span>${isExpanded ? 'Click to collapse' : 'Click to learn more'}</span>
+            </div>
+            
+            <!-- Expanded Content -->
+            <div class="card-content ${isExpanded ? 'pt-4' : ''}">
+              <div class="decorative-border h-px w-full mb-4"></div>
+              
+              <div class="text-left">
+                <h4 class="font-display text-sm tracking-wider mb-2" style="color: ${event.color};">
+                  📜 THE FULL STORY
+                </h4>
+                <p class="text-base leading-relaxed mb-4" style="color: #d4cfc2;">
+                  ${event.details}
+                </p>
+                
+                <div class="rounded-lg p-4 mt-4" style="background: ${event.color}15; border-left: 3px solid ${event.color};">
+                  <h4 class="font-display text-sm tracking-wider mb-2" style="color: ${event.color};">
+                    💡 FUN FACT
+                  </h4>
+                  <p class="text-base italic" style="color: #e8e3d9;">
+                    ${event.funFact}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    // Render all events
+    function renderEvents() {
+      const container = document.getElementById('events-container');
+      const filteredEvents = currentFilter === 'all' 
+        ? events 
+        : events.filter(e => e.civilization === currentFilter);
+      
+      container.innerHTML = filteredEvents.map((event, index) => renderEventCard(event, index)).join('');
+    }
+
+    // Toggle card expansion
+    function toggleCard(eventId) {
+      if (expandedCards.has(eventId)) {
+        expandedCards.delete(eventId);
+      } else {
+        expandedCards.add(eventId);
+      }
+      renderEvents();
+      
+      // Update fun fact in footer
+      const event = events.find(e => e.id === eventId);
+      if (event && expandedCards.has(eventId)) {
+        document.getElementById('fun-fact').textContent = event.funFact;
+      }
+    }
+
+    // Filter events by civilization
+    function filterEvents(civilization) {
+      currentFilter = civilization;
+      expandedCards.clear();
+      
+      // Update button styles
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const filter = btn.dataset.filter;
+        if (filter === civilization) {
+          btn.classList.add('active');
+          btn.style.background = filter === 'all' ? '#d4af37' : 
+            filter === 'egyptian' ? '#c9a227' :
+            filter === 'greek' ? '#6b9bd1' : '#c45c4a';
+          btn.style.color = '#1a1814';
+          btn.style.borderColor = 'transparent';
+        } else {
+          btn.classList.remove('active');
+          btn.style.background = 'transparent';
+          const colors = {
+            all: '#d4af37',
+            egyptian: '#c9a227',
+            greek: '#6b9bd1',
+            roman: '#c45c4a'
+          };
+          btn.style.color = colors[filter];
+          btn.style.borderColor = colors[filter];
+        }
+      });
+      
+      renderEvents();
+    }
+
+    // Element SDK integration
+    async function onConfigChange(config) {
+      const title = config.timeline_title || defaultConfig.timeline_title;
+      const subtitle = config.timeline_subtitle || defaultConfig.timeline_subtitle;
+      const introText = config.intro_text || defaultConfig.intro_text;
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      const fontSize = config.font_size || defaultConfig.font_size;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const cardColor = config.card_color || defaultConfig.card_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+
+      // Update text content
+      document.getElementById('main-title').textContent = title;
+      document.getElementById('subtitle').textContent = subtitle;
+      document.getElementById('intro-text').textContent = introText;
+
+      // Update fonts
+      const fontStack = `${fontFamily}, Cinzel, serif`;
+      document.querySelectorAll('.font-display').forEach(el => {
+        el.style.fontFamily = fontStack;
+      });
+
+      // Update font sizes proportionally
+      document.getElementById('main-title').style.fontSize = `${fontSize * 2.5}px`;
+      document.getElementById('subtitle').style.fontSize = `${fontSize * 1.25}px`;
+      document.getElementById('intro-text').style.fontSize = `${fontSize}px`;
+
+      // Update colors
+      document.getElementById('app-wrapper').style.background = `linear-gradient(135deg, ${bgColor} 0%, ${cardColor} 50%, ${bgColor} 100%)`;
+      document.getElementById('main-title').style.color = accentColor;
+      document.getElementById('subtitle').style.color = textColor;
+      document.getElementById('intro-text').style.color = secondaryColor;
+
+      // Update decorative elements
+      document.querySelectorAll('.decorative-border').forEach(el => {
+        el.style.background = `linear-gradient(90deg, transparent, ${accentColor}, transparent)`;
+        el.style.backgroundSize = '200% 100%';
+      });
+
+      document.querySelectorAll('.timeline-line').forEach(el => {
+        el.style.background = `linear-gradient(180deg, transparent 0%, ${accentColor} 5%, ${accentColor} 95%, transparent 100%)`;
+      });
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => { config.background_color = value; window.elementSdk.setConfig({ background_color: value }); }
+          },
+          {
+            get: () => config.card_color || defaultConfig.card_color,
+            set: (value) => { config.card_color = value; window.elementSdk.setConfig({ card_color: value }); }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => { config.text_color = value; window.elementSdk.setConfig({ text_color: value }); }
+          },
+          {
+            get: () => config.accent_color || defaultConfig.accent_color,
+            set: (value) => { config.accent_color = value; window.elementSdk.setConfig({ accent_color: value }); }
+          },
+          {
+            get: () => config.secondary_color || defaultConfig.secondary_color,
+            set: (value) => { config.secondary_color = value; window.elementSdk.setConfig({ secondary_color: value }); }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => { config.font_family = value; window.elementSdk.setConfig({ font_family: value }); }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => { config.font_size = value; window.elementSdk.setConfig({ font_size: value }); }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["timeline_title", config.timeline_title || defaultConfig.timeline_title],
+        ["timeline_subtitle", config.timeline_subtitle || defaultConfig.timeline_subtitle],
+        ["intro_text", config.intro_text || defaultConfig.intro_text]
+      ]);
+    }
+
+    // Initialize
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initial render
+    renderEvents();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9da3981a206f94dd',t:'MTc3MzE1OTA3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
